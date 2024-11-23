@@ -72,11 +72,11 @@ async def ask_question(request: Request):
 
 @app.get("/openapi.json")
 def get_openapi_endpoint():
-    return JSONResponse(content=get_openapi(
-        title="WepPage AI API",
-        version="1.0.0",
-        routes=app.routes,
-    ))
+	return JSONResponse(content=get_openapi(
+		title="WepPage AI API",
+		version="1.0.0",
+		routes=app.routes,
+	))
 
 async def _enforce_site_data_limit(site_data: dict[str, str]) -> dict[str, str]:
 	site_data_with_data_limit = site_data.copy()

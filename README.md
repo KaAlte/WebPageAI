@@ -1,5 +1,6 @@
 # WebPageAI
 
+WebPageAI is a FastAPI-based application that crawls websites and allows users to ask questions based on the crawled content. It uses OpenAI's GPT model to generate answers from the gathered data. The app provides endpoints for retrieving source information and querying the site data via a RESTful API.
 
 ## Required
 

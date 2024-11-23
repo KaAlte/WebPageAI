@@ -6,12 +6,12 @@ from bs4 import BeautifulSoup
 
 class PageContent:
 	def __init__(self,
-			  divs: list[str] = list(),
-			  paragraphs: list[str] = list(),
-			  headings: list[str] = list(),
-			  lists: list[str] = list(),
-			  url: str = "",
-			  links: list[str] = list(),
+				divs: list[str] = list(),
+				paragraphs: list[str] = list(),
+				headings: list[str] = list(),
+				lists: list[str] = list(),
+				url: str = "",
+				links: list[str] = list(),
 			):
 		self._divs = divs
 		self._paragraphs = paragraphs
