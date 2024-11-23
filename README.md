@@ -8,7 +8,7 @@
 * openai - Interacting with OpenAI's models
 * httpx - Making async http requests
 
-## How to start server (With Docker)
+## How to start server
 
 1. Set up enviournment variables
 
@@ -26,38 +26,24 @@
     docker-compose up --build
     ```
 
-## How to start server (No Docker)
-
-1. Make virtual enviournment
-
-    ```bash
-    python3 -m venv venv
-    ```
-
-2. Activate the virtual envionrment
-
-    ```bash
-    source venv/bin/activate
-    ```
-
-3. Install dependencies
-
-    ```bash
-    pip install -r requirements.txt
-    ```
-
 ## How to make requests
 
-### source_info
+### /source_info
 
 ```bash
 curl -X GET http://0.0.0.0:8000/source_info
 ```
 
-### ask
+### /ask
 
 ```bash
 curl -X POST http://0.0.0.0:8000/ask -H "Content-Type: text/plain" -d "What is this website for?"
+```
+
+### /openapi.json
+
+```bash
+curl -X GET http://0.0.0.0:8000/openapi.json
 ```
 
 ## TODO for production ready
@@ -74,4 +60,3 @@ curl -X POST http://0.0.0.0:8000/ask -H "Content-Type: text/plain" -d "What is t
 * /ask is requested in JSON format instead of plain text
 * UnitTests
 * Code Cleanup
-* OpenAPI

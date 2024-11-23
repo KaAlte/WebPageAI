@@ -1,6 +1,8 @@
 import os
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.concurrency import asynccontextmanager
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import JSONResponse
 import openai
 from src.crawler.crawler import crawl_site
 from dotenv import load_dotenv
@@ -67,6 +69,14 @@ async def ask_question(request: Request):
 			"sources": list((side_data_for_open_ai).keys())
 		}
 	}
+
+@app.get("/openapi.json")
+def get_openapi_endpoint():
+    return JSONResponse(content=get_openapi(
+        title="WepPage AI API",
+        version="1.0.0",
+        routes=app.routes,
+    ))
 
 async def _enforce_site_data_limit(site_data: dict[str, str]) -> dict[str, str]:
 	site_data_with_data_limit = site_data.copy()
