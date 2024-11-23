@@ -60,3 +60,43 @@ curl -X GET http://0.0.0.0:8000/openapi.json
 * /ask is requested in JSON format instead of plain text
 * UnitTests
 * Code Cleanup
+* Implement CI/CD pipeline
+
+## Building a CI/CD pipeline
+
+### Version control
+
+Having 3 type of branches: master, dev and dev-{taskID}.
+
+Master branch would be Production enviournment branch. When changes are merged to this branch, a deployment process starts for Production. Master branch should not do tests for Deployment not be halted in case of a disaster
+
+Dev branch would be Stage enviournment branch. When changes are merged to this branch, a deployment process starts for Stage. This would be used for pull requests to merge to Master. Dev branch will do tests and fail Deployment in case any tests fail.
+
+Dev-{taskID} would be Development branch. Would be used for pull requests to merge code changes to Dev. Dev branch will do tests and the results are show in GitHub Pull Requests.
+
+### Continuous Integration (CI)
+
+Using GitHub Actions could set up to build the Docker image and run the following tests:
+
+* Code Quality/Style checks
+  * Pylint
+  * Flake8
+* Tests using pytest
+* E2E tests using Selenium
+
+The result of this build alongside the tests results must be shown in GitHub Pull Requests
+
+### Continuous Deployment (CD)
+
+Application would be automatically deployed to Azure using Azure DevOps or GitHub Actions
+
+1. Create Github Actions Workflow file following the CI steps above
+2. Set up GitHub Secrets for connecting with Azure including the Azure COntainer Registry
+
+### Azure cloud
+
+1. Tag Docker image
+2. Push Docker image to registry
+3. Create Azure App Service for Containers
+4. Configure App Service to Use Docker Image
+5. Test if it works
