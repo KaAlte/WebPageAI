@@ -9,15 +9,13 @@ class PageContent:
 			  divs: list[str] = list(),
 			  paragraphs: list[str] = list(),
 			  headings: list[str] = list(),
-			  tables: list[list[str]] = list(list()),
 			  lists: list[str] = list(),
-			  url = "",
-			  links: set[str] = set(),
+			  url: str = "",
+			  links: list[str] = list(),
 			):
 		self._divs = divs
 		self._paragraphs = paragraphs
 		self._headings = headings
-		self._tables = tables
 		self._lists = lists
 		self._url = url
 		self._links = links
@@ -40,13 +38,10 @@ class PageContent:
 	def lists(self) -> set[str]:
 		return self._lists
 
-	def tables(self) -> set[str]:
-		return self._lists
-
 	def construct_text(self) -> str:
 		result = []
 		
-		result.append(f"URL:\n{self.url}\n")
+		result.append(f"URL:\n{self.url()}\n")
 		
 		if self.headings():
 			result.append("Headings:")
@@ -71,11 +66,6 @@ class PageContent:
 			for list_content in self.lists():
 				result.append(list_content)
 			result.append("")
-		
-		if self.tables():
-			result.append("Tables:")
-			for idx, table in enumerate(self.tables(), 1):
-				result.append(f"Table {idx}: {', '.join(table[0] if table else [])} | Rows: {len(table)-1}")
 
 
 		if self.links():
@@ -103,9 +93,6 @@ async def _extract_page(url: str) -> PageContent:
 				paragraphs: list[str] = [p.text.strip() for p in soup.find_all('p')]
 				links: list[str] = {urljoin(url, a['href']) for a in soup.find_all('a', href=True)}
 				headings: list[str] = [h.text.strip() for h in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])]
-				tables: list[list[str]] = [[cell.text.strip() for cell in row.find_all(['th', 'td'])]
-						for table in soup.find_all('table')
-						for row in table.find_all('tr')]
 				lists: list[str] = [li.text.strip() for li in soup.find_all('li')]
 
 				divs: list[str] = []
@@ -121,7 +108,7 @@ async def _extract_page(url: str) -> PageContent:
 							):
 							divs.append(text)
 	
-				return PageContent(divs, paragraphs, headings, tables, lists, url, links)
+				return PageContent(divs, paragraphs, headings, lists, url, links)
 	except Exception as e:
 		print(f"Failed to fetch '{url}': {e}")
 	return PageContent()

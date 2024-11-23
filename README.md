@@ -1,5 +1,11 @@
 # WebPageAI
 
+
+## Required
+
+* Dockerfile
+* Python3.12 (For Tests)
+
 ## Packages
 
 * fastapi - Web framework
@@ -46,20 +52,28 @@ curl -X POST http://0.0.0.0:8000/ask -H "Content-Type: text/plain" -d "What is t
 curl -X GET http://0.0.0.0:8000/openapi.json
 ```
 
+## How to run tests
+
+```bash
+python -m unittest discover tests/
+```
+
 ## TODO for production ready
 
 * Cache the crawler results so it is not needed to do every time (Ex: Redis)
   * Seperate worker to populate the redis
+* Tests
+  * Matrix unit tests
+  * E2E
+  * Code Quality/Style
 * E2E tests
 * Better filtering of unwanted text when asking questions:
   * Remove duplicate text
     * Cosine similarity
   * Remove unrelated links when making requests
     * Give OpenAI the question to ask what links to remove by giving in the link text and length of its content
-* Handle more than one website
+* Crawl more than one website
 * /ask is requested in JSON format instead of plain text
-* UnitTests
-* Code Cleanup
 * Implement CI/CD pipeline
 
 ## Building a CI/CD pipeline
