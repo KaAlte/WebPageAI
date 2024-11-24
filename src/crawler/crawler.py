@@ -20,58 +20,58 @@ class PageContent:
 		self._url = url
 		self._links = links
 
-	def url(self) -> str:
+	def get_url(self) -> str:
 		return self._url
 	
-	def divs(self) -> list[str]:
+	def get_divs(self) -> list[str]:
 		return self._divs
 
-	def paragraphs(self) -> list[str]:
+	def get_paragraphs(self) -> list[str]:
 		return self._paragraphs
 	
-	def headings(self) -> list[str]:
+	def get_headings(self) -> list[str]:
 		return self._headings
 
-	def links(self) -> set[str]:
+	def get_links(self) -> set[str]:
 		return self._links
 
-	def lists(self) -> set[str]:
+	def get_lists(self) -> set[str]:
 		return self._lists
 
 	def construct_text(self) -> str:
 		result = []
 		
-		result.append(f"URL:\n{self.url()}\n")
+		result.append(f"URL:\n{self.get_url()}\n")
 		
-		if self.headings():
+		if self.get_headings():
 			result.append("Headings:")
-			for idx, heading in enumerate(self.headings(), 1):
+			for idx, heading in enumerate(self.get_headings(), 1):
 				result.append(f"{idx}. {heading}")
 			result.append("")
 		
-		if self.paragraphs():
+		if self.get_paragraphs():
 			result.append("Paragraphs:")
-			for paragraph in self.paragraphs():
+			for paragraph in self.get_paragraphs():
 				result.append(paragraph)
 			result.append("")
 
-		if self.divs():
+		if self.get_divs():
 			result.append("Divs:")
-			for div in self.divs():
+			for div in self.get_divs():
 				result.append(div)
 			result.append("")
 		
-		if self.lists():
+		if self.get_lists():
 			result.append("Lists:")
-			for list_content in self.lists():
+			for list_content in self.get_lists():
 				result.append(list_content)
 			result.append("")
 
 
-		if self.links():
+		if self.get_links():
 			result.append("Links:")
-			for link in self.links():
-				result.append(f"- {link}")
+			for link in self.get_links():
+				result.append(link)
 			result.append("")
 		
 		return "\n".join(result)
@@ -84,7 +84,8 @@ def _clean_url(link: str) -> str:
 def _link_has_extension(url: str) -> bool:
 	return bool(re.search(r'\.\w{3,4}($|\?)$', url))
 
-async def _extract_page(url: str) -> PageContent:
+async def _extract_page_content(url: str) -> PageContent:
+	"Extracts the content of a page and returns it as a PageContent object"
 	try:
 		async with httpx.AsyncClient(follow_redirects=True) as client:
 			response = await client.get(url, timeout=10)
@@ -114,24 +115,24 @@ async def _extract_page(url: str) -> PageContent:
 	return PageContent()
 
 
-async def _crawl_page(url: str, base_url: str, visitedUrls: set, max_depth: int, current_depth=0) -> dict[str, str]:
+async def _crawl_page(url: str, base_url: str, visited_urls: set, max_depth: int, current_depth=0) -> dict[str, str]:
 	url = _clean_url(url)
-	if current_depth > max_depth or url in visitedUrls or _link_has_extension(url) or not url.startswith('http') or not url.startswith(base_url):
+	if current_depth > max_depth or url in visited_urls or _link_has_extension(url) or not url.startswith('http') or not url.startswith(base_url):
 		return {}
 	
-	visitedUrls.add(url)
+	visited_urls.add(url)
 
-	pageContext = await _extract_page(url)
-	if len(pageContext.paragraphs()) == 0:
+	page_context = await _extract_page_content(url)
+	if len(page_context.get_paragraphs()) == 0:
 		return {}
-	pageText = pageContext.construct_text()
-	crawled_data = {pageContext.url(): pageText}
+	page_text = page_context.construct_text()
+	crawled_data = {page_context.get_url(): page_text}
 
 	new_depth = current_depth + 1
 	
 	tasks = []
-	for link in pageContext.links():
-		tasks.append(_crawl_page(link, base_url, visitedUrls, max_depth, new_depth))
+	for link in page_context.get_links():
+		tasks.append(_crawl_page(link, base_url, visited_urls, max_depth, new_depth))
 	
 	results = await asyncio.gather(*tasks)
 	for result in results:

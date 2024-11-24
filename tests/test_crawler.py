@@ -1,6 +1,6 @@
 import unittest
-from unittest.mock import AsyncMock, patch, MagicMock
-from src.crawler.crawler import PageContent, _clean_url, _link_has_extension, _extract_page, _crawl_page, crawl_site
+from unittest.mock import patch, MagicMock
+from src.crawler.crawler import _extract_page_content, PageContent
 
 class TestPageContent(unittest.TestCase):
 	def test_construct_text(self):
@@ -33,8 +33,8 @@ Item 1
 Item 2
 
 Links:
-- http://example.com/link1
-- http://example.com/link2
+http://example.com/link1
+http://example.com/link2
 """
 
 		self.assertEqual(page_content.construct_text(), expected_output)
@@ -48,10 +48,10 @@ class TestCrawler(unittest.IsolatedAsyncioTestCase):
 		mock_response.content = b"<html><body><p>Test paragraph</p></body></html>"
 		mock_get.return_value = mock_response
 
-		page_content = await _extract_page("http://example.com")
+		page_content = await _extract_page_content("http://example.com")
 
-		self.assertEqual(len(page_content.paragraphs()), 1)
-		self.assertEqual(page_content.paragraphs()[0], "Test paragraph")
+		self.assertEqual(len(page_content.get_paragraphs()), 1)
+		self.assertEqual(page_content.get_paragraphs()[0], "Test paragraph")
 
 	@patch("httpx.AsyncClient.get")
 	async def test_extract_small_page(self, mock_get):
@@ -74,25 +74,25 @@ class TestCrawler(unittest.IsolatedAsyncioTestCase):
 		"""
 		mock_get.return_value = mock_response
 
-		page_content = await _extract_page("http://example.com")
+		page_content = await _extract_page_content("http://example.com")
 
-		paragraphs = page_content.paragraphs()
+		paragraphs = page_content.get_paragraphs()
 		self.assertEqual(len(paragraphs), 2)
 		self.assertEqual(paragraphs[0], "Paragraph 1")
 		self.assertEqual(paragraphs[1], "Paragraph 2 with more details")
 
-		headings = page_content.headings()
+		headings = page_content.get_headings()
 		self.assertEqual(len(headings), 1)
 		self.assertEqual(headings[0], "Main Heading")
 
-		links = page_content.links()
+		links = page_content.get_links()
 		self.assertIn("http://example.com/link", links)
 
-		lists = page_content.lists()
+		lists = page_content.get_lists()
 		self.assertEqual(len(lists), 2)
 		self.assertEqual(lists[0], "List item 1")
 		self.assertEqual(lists[1], "List item 2")
 
-		divs = page_content.divs()
+		divs = page_content.get_divs()
 		self.assertEqual(len(divs), 1)
 		self.assertEqual(divs[0], "Some div content")
