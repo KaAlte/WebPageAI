@@ -64,7 +64,7 @@ python -m unittest discover tests/
 * Cache the crawler results so it is not needed to do every time (Ex: Redis)
   * Seperate worker to populate the redis
 * Tests
-  * Matrix unit tests
+  * Matrix unit tests written using black box approach
   * E2E
   * Code Quality/Style
 * E2E tests
@@ -73,9 +73,11 @@ python -m unittest discover tests/
     * Cosine similarity
   * Remove unrelated links when making requests
     * Give OpenAI the question to ask what links to remove by giving in the link text and length of its content
+* Use AI model trained off of website data
 * Crawl more than one website
 * /ask is requested in JSON format instead of plain text
 * Implement CI/CD pipeline
+* More clear way of handling app.state variables instead of main.py functions of "get_site_data" and "get_openai"
 
 ## Building a CI/CD pipeline
 
